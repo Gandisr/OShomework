@@ -776,7 +776,6 @@ int main(int argc, char **argv){
 			printFatLine(fl);
 		}
 
-		free(fl);
 	}
 
 
