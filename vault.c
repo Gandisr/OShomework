@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <stdbool.h>
-
+#include <unistd.h>
 
 
 #define _FILE_OFFSET_BITS 64
