@@ -830,8 +830,6 @@ int main(int argc, char **argv){
 		filled = fillBuffer(fd, &buff1, &offset1, remSize, totalSize-count);
 		count += filled;
 		if(buff1 >=  remSize){
-			printf("%d\n", buff1);
-			fflush(NULL);
 			placeFile(fd, argv[3], inputStat, offset1, buff1, offset2, buff2, offset3, buff3);
 			measureTime(start);
 			close(fd);
@@ -839,8 +837,13 @@ int main(int argc, char **argv){
 			return 0;
 		}
 		//buffer 2
+		lseek(fd, START_OF_DATA+offset1+buff1, SEEK_SET);
+
 		remSize = remSize - buff1 + 16;
+
+
 		filled = fillBuffer(fd, &buff2, &offset2, remSize, totalSize-count);
+		offset2 += buff1+offset1;
 		count += filled;
 		if(buff2 == remSize){
 			placeFile(fd, argv[3], inputStat, offset1, buff1, offset2, buff2, offset3, buff3);
@@ -857,8 +860,10 @@ int main(int argc, char **argv){
 			return -1;
 		}
 		//buffer 3
+		lseek(fd, START_OF_DATA+offset2+buff2, SEEK_SET);
 		remSize = remSize - buff1 + 16;
 		filled = fillBuffer(fd, &buff3, &offset3, remSize, totalSize-count);
+		offset3 += buff2+offset2;
 		count += filled;
 		if(buff3 == remSize){
 			placeFile(fd, argv[3], inputStat, offset1, buff1, offset2, buff2, offset3, buff3);
@@ -874,6 +879,8 @@ int main(int argc, char **argv){
 			free(fl);
 			return -1;
 		}
+		lseek(fd, START_OF_DATA+offset3+buff3, SEEK_SET);
+
 		//the 3 buffers were not enough, continue to search further
 		while(count < totalSize){
 			//check who is the smallest
@@ -890,6 +897,7 @@ int main(int argc, char **argv){
 
 			filled = fillBuffer(fd, &buff3, &offset3, remSize, totalSize-count);
 			count += filled;
+			offset3+= offset2+buff2;
 			if(buff3 == remSize){
 				placeFile(fd, argv[3], inputStat, offset1, buff1, offset2, buff2, offset3, buff3);
 				measureTime(start);
